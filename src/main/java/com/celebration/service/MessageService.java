@@ -6,7 +6,7 @@ import com.celebration.domain.MediaType;
 import com.celebration.domain.Message;
 import com.celebration.domain.OccasionType;
 import com.celebration.domain.TemplateCode;
-import com.celebration.infra.InMemoryMessageRepository;
+import com.celebration.infra.MessageRepository;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
@@ -27,14 +27,14 @@ public class MessageService {
     private static final long VOICE_MAX_SIZE = 5L * 1024 * 1024;
     private static final long TOTAL_MAX_SIZE = 14L * 1024 * 1024;
 
-    private final InMemoryMessageRepository repository;
+    private final MessageRepository repository;
     private final Clock clock;
 
-    public MessageService(InMemoryMessageRepository repository) {
+    public MessageService(MessageRepository repository) {
         this(repository, Clock.systemUTC());
     }
 
-    MessageService(InMemoryMessageRepository repository, Clock clock) {
+    MessageService(MessageRepository repository, Clock clock) {
         this.repository = repository;
         this.clock = clock;
     }
@@ -92,6 +92,7 @@ public class MessageService {
         }
 
         message.update(request.title(), request.content(), request.templateCode(), request.expiresAt(), now);
+        repository.save(message);
         return new MessageDtos.UpdateMessageResponse(message.getMessageId(), message.getUpdatedAt());
     }
 
@@ -120,6 +121,8 @@ public class MessageService {
             }
             message.addImage(toMedia(MediaType.IMAGE, image, nextSort++));
         }
+
+        repository.save(message);
     }
 
     public void upsertVoice(String messageId, String editToken, MultipartFile voice) {
@@ -131,6 +134,7 @@ public class MessageService {
         validateAndBuildMedia(List.of(), voice, sizeWithoutExistingVoice);
         if (voice != null && !voice.isEmpty()) {
             message.replaceVoice(toMedia(MediaType.VOICE, voice, null));
+            repository.save(message);
         }
     }
 
@@ -143,6 +147,8 @@ public class MessageService {
         if (!removed) {
             throw new AppException(ErrorCode.NOT_FOUND, HttpStatus.NOT_FOUND, "media not found");
         }
+
+        repository.save(message);
     }
 
     private Message findMessage(String messageId) {
