@@ -5,6 +5,7 @@ const imagesEl = document.getElementById('images');
 const voiceEl = document.getElementById('voice');
 const formError = document.getElementById('form-error');
 const sizeHint = document.getElementById('size-hint');
+const uploadDetail = document.getElementById('upload-detail');
 
 const resultCard = document.getElementById('result-card');
 const messageIdEl = document.getElementById('message-id');
@@ -25,8 +26,18 @@ const previewVoice = document.getElementById('preview-voice');
 const MB = 1024 * 1024;
 
 occasionTypeEl.addEventListener('change', () => {
-  occasionNameWrap.classList.toggle('hidden', occasionTypeEl.value !== 'CUSTOM');
+  const custom = occasionTypeEl.value === 'CUSTOM';
+  occasionNameWrap.classList.toggle('hidden', !custom);
+  const occasionNameInput = occasionNameWrap.querySelector('input');
+  occasionNameInput.required = custom;
+  if (!custom) {
+    occasionNameInput.value = '';
+  }
 });
+
+function formatMb(size) {
+  return `${(size / MB).toFixed(2)}MB`;
+}
 
 function validateUploadSize() {
   const images = [...imagesEl.files];
@@ -36,7 +47,7 @@ function validateUploadSize() {
     return '이미지는 최대 3장까지 업로드할 수 있습니다.';
   }
 
-  const imageTooLarge = images.find(file => file.size > 3 * MB);
+  const imageTooLarge = images.find((file) => file.size > 3 * MB);
   if (imageTooLarge) {
     return `이미지 파일(${imageTooLarge.name})이 3MB를 초과합니다.`;
   }
@@ -46,7 +57,9 @@ function validateUploadSize() {
   }
 
   const totalSize = images.reduce((sum, file) => sum + file.size, 0) + (voice?.size || 0);
-  sizeHint.textContent = `현재 총 업로드: ${(totalSize / MB).toFixed(2)}MB / 14MB`;
+  sizeHint.textContent = `현재 총 업로드: ${formatMb(totalSize)} / 14MB`;
+  uploadDetail.textContent = `이미지 ${images.length}개${voice ? ', 음성 1개' : ''} 선택됨`;
+
   if (totalSize > 14 * MB) {
     return '총 업로드 용량이 14MB를 초과했습니다.';
   }
@@ -54,12 +67,13 @@ function validateUploadSize() {
   return null;
 }
 
-imagesEl.addEventListener('change', () => {
-  formError.textContent = validateUploadSize() || '';
-});
-voiceEl.addEventListener('change', () => {
-  formError.textContent = validateUploadSize() || '';
-});
+function refreshUploadValidation() {
+  const uploadError = validateUploadSize();
+  formError.textContent = uploadError || '';
+}
+
+imagesEl.addEventListener('change', refreshUploadValidation);
+voiceEl.addEventListener('change', refreshUploadValidation);
 
 form.addEventListener('submit', async (event) => {
   event.preventDefault();
@@ -73,7 +87,7 @@ form.addEventListener('submit', async (event) => {
 
   const data = new FormData(form);
   data.delete('images');
-  [...imagesEl.files].forEach(file => data.append('images', file));
+  [...imagesEl.files].forEach((file) => data.append('images', file));
   if (!voiceEl.files[0]) {
     data.delete('voice');
   }
@@ -92,6 +106,7 @@ form.addEventListener('submit', async (event) => {
     publicLinkEl.href = publicLink;
     expiresAtEl.textContent = new Date(body.expiresAt).toLocaleString();
     resultCard.classList.remove('hidden');
+    resultCard.scrollIntoView({ behavior: 'smooth', block: 'start' });
   } catch (error) {
     formError.textContent = error.message;
   }
@@ -125,7 +140,7 @@ async function loadPublicMessage() {
     previewOccasion.textContent = `${body.occasion.type}${body.occasion.name ? ` (${body.occasion.name})` : ''}`;
 
     previewImages.innerHTML = '';
-    body.media.images.forEach(image => {
+    body.media.images.forEach((image) => {
       const img = document.createElement('img');
       img.src = image.url;
       img.alt = `image-${image.sortOrder}`;
@@ -148,6 +163,12 @@ async function loadPublicMessage() {
 }
 
 loadBtn.addEventListener('click', loadPublicMessage);
+publicTokenEl.addEventListener('keydown', (event) => {
+  if (event.key === 'Enter') {
+    event.preventDefault();
+    loadPublicMessage();
+  }
+});
 
 const params = new URLSearchParams(window.location.search);
 const prefilledToken = params.get('publicToken');

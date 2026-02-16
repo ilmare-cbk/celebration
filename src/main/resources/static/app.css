@@ -1,29 +1,66 @@
 :root {
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  font-family: "Pretendard", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
   color: #1f2937;
   background: #f3f4f6;
 }
 
+* {
+  box-sizing: border-box;
+}
+
 body {
   margin: 0;
+  background: linear-gradient(180deg, #eef2ff 0%, #f9fafb 240px);
 }
 
 .container {
-  max-width: 860px;
+  max-width: 920px;
   margin: 0 auto;
   padding: 24px;
 }
 
 .card {
-  background: white;
-  border-radius: 12px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.07);
+  background: #fff;
+  border-radius: 14px;
+  box-shadow: 0 8px 24px rgba(15, 23, 42, 0.08);
   padding: 20px;
   margin-bottom: 16px;
+  border: 1px solid #e5e7eb;
+}
+
+.hero {
+  background: linear-gradient(120deg, #eff6ff, #f5f3ff);
+}
+
+.eyebrow {
+  margin: 0;
+  color: #4338ca;
+  font-weight: 700;
+  letter-spacing: 0.03em;
+}
+
+h1, h2 {
+  margin: 8px 0;
+}
+
+.policy-list {
+  margin: 12px 0 0;
+  padding-left: 20px;
+  color: #374151;
+}
+
+.section-title-wrap {
+  margin-bottom: 12px;
 }
 
 form {
   display: grid;
+  gap: 14px;
+}
+
+.field-row {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 12px;
 }
 
@@ -33,6 +70,19 @@ label {
   font-weight: 600;
 }
 
+fieldset {
+  border: 1px solid #dbeafe;
+  border-radius: 12px;
+  margin: 0;
+  padding: 12px;
+}
+
+legend {
+  padding: 0 4px;
+  font-weight: 700;
+  color: #1e40af;
+}
+
 input, select, textarea, button {
   font: inherit;
   padding: 10px;
@@ -40,11 +90,24 @@ input, select, textarea, button {
   border: 1px solid #d1d5db;
 }
 
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible,
+button:focus-visible {
+  outline: 2px solid #2563eb;
+  outline-offset: 2px;
+}
+
 button {
   background: #2563eb;
   color: #fff;
   border: none;
   cursor: pointer;
+  font-weight: 700;
+}
+
+button:hover {
+  background: #1d4ed8;
 }
 
 .template-grid {
@@ -55,10 +118,17 @@ button {
 
 .template {
   border: 1px solid #d1d5db;
-  border-radius: 8px;
-  padding: 10px;
+  border-radius: 10px;
+  padding: 12px;
   display: flex;
   gap: 8px;
+  align-items: flex-start;
+}
+
+.template small {
+  display: block;
+  color: #4b5563;
+  margin-top: 3px;
 }
 
 .template:has(input:checked) {
@@ -66,18 +136,51 @@ button {
   background: #eff6ff;
 }
 
+.upload-status {
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 10px;
+  padding: 10px;
+}
+
 .hidden { display: none; }
 .hint { color: #4b5563; margin: 4px 0; }
-.error { color: #dc2626; min-height: 22px; }
+.error { color: #dc2626; min-height: 22px; margin: 0; }
 .inline { display: flex; gap: 8px; }
 .inline input { flex: 1; }
-.image-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); gap: 8px; }
-.image-grid img { width: 100%; border-radius: 8px; border: 1px solid #e5e7eb; }
 
-.preview.template-a { border-left: 4px solid #2563eb; padding-left: 12px; }
-.preview.template-b { background: #111827; color: #f9fafb; padding: 12px; border-radius: 10px; }
-.preview.template-c { font-family: "Georgia", serif; border: 1px dashed #9ca3af; padding: 12px; }
+.preview {
+  margin-top: 14px;
+  padding: 14px;
+  border-radius: 12px;
+  border: 1px solid #e5e7eb;
+}
 
-@media (max-width: 640px) {
-  .template-grid { grid-template-columns: 1fr; }
+.image-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+  gap: 8px;
+}
+
+.image-grid img {
+  width: 100%;
+  border-radius: 8px;
+  border: 1px solid #e5e7eb;
+  object-fit: cover;
+  min-height: 90px;
+}
+
+.preview.template-a { border-left: 5px solid #2563eb; }
+.preview.template-b { background: #111827; color: #f9fafb; }
+.preview.template-c { font-family: "Nanum Myeongjo", Georgia, serif; border-style: dashed; }
+
+@media (max-width: 760px) {
+  .container {
+    padding: 16px;
+  }
+
+  .field-row,
+  .template-grid {
+    grid-template-columns: 1fr;
+  }
 }

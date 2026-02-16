@@ -8,66 +8,98 @@
 </head>
 <body>
 <main class="container">
-  <h1>Celebration 메시지 만들기</h1>
-  <p class="hint">비회원도 작성할 수 있으며 기본 만료일은 7일입니다.</p>
+  <header class="hero card">
+    <p class="eyebrow">Celebration MVP</p>
+    <h1>기념일 메시지를 만들어 공유하세요</h1>
+    <p class="hint">비회원도 작성 가능하며 링크는 기본 7일 뒤 만료됩니다.</p>
+    <ul class="policy-list">
+      <li>이미지: 최대 3장 (각 3MB)</li>
+      <li>음성: 최대 1개 (5MB)</li>
+      <li>총 업로드: 14MB 이하</li>
+    </ul>
+  </header>
 
   <section class="card">
+    <div class="section-title-wrap">
+      <h2>1. 메시지 작성</h2>
+      <p class="hint">텍스트, 이미지, 음성을 함께 구성해 링크를 생성하세요.</p>
+    </div>
+
     <form id="create-form">
-      <label>기념일 종류
-        <select name="occasionType" id="occasionType" required>
-          <option value="BIRTHDAY">생일</option>
-          <option value="WEDDING_ANNIVERSARY">결혼기념일</option>
-          <option value="VALENTINES_DAY">발렌타인데이</option>
-          <option value="CUSTOM">직접입력</option>
-        </select>
-      </label>
-      <label id="occasionNameWrap" class="hidden">기념일 이름
-        <input type="text" name="occasionName" placeholder="예: 첫 만난 날" maxlength="80" />
-      </label>
+      <div class="field-row">
+        <label>기념일 종류
+          <select name="occasionType" id="occasionType" required>
+            <option value="BIRTHDAY">생일</option>
+            <option value="WEDDING_ANNIVERSARY">결혼기념일</option>
+            <option value="VALENTINES_DAY">발렌타인데이</option>
+            <option value="CUSTOM">직접입력</option>
+          </select>
+        </label>
 
-      <label>제목
-        <input type="text" name="title" maxlength="120" required />
-      </label>
-
-      <label>본문
-        <textarea name="content" maxlength="2000" rows="6" required></textarea>
-      </label>
-
-      <div>
-        <p class="label">템플릿 선택</p>
-        <div class="template-grid" id="template-grid">
-          <label class="template">
-            <input type="radio" name="templateCode" value="TEMPLATE_A" checked />
-            <span>Template A<br><small>Classic Card</small></span>
-          </label>
-          <label class="template">
-            <input type="radio" name="templateCode" value="TEMPLATE_B" />
-            <span>Template B<br><small>Photo Focus</small></span>
-          </label>
-          <label class="template">
-            <input type="radio" name="templateCode" value="TEMPLATE_C" />
-            <span>Template C<br><small>Minimal Letter</small></span>
-          </label>
-        </div>
+        <label id="occasionNameWrap" class="hidden">기념일 이름
+          <input type="text" name="occasionName" placeholder="예: 첫 만난 날" maxlength="80" />
+        </label>
       </div>
 
-      <label>이미지 업로드 (최대 3장, 각 3MB)
-        <input type="file" name="images" id="images" accept="image/*" multiple />
+      <label>메시지 제목
+        <input type="text" name="title" maxlength="120" required placeholder="예: 생일 축하해 🎉" />
       </label>
 
-      <label>음성 업로드 (최대 1개, 5MB)
-        <input type="file" name="voice" id="voice" accept="audio/*" />
+      <label>메시지 본문
+        <textarea name="content" maxlength="2000" rows="7" required placeholder="전하고 싶은 마음을 작성해보세요."></textarea>
       </label>
 
-      <p class="hint" id="size-hint">총 업로드 용량은 14MB 이하여야 합니다.</p>
+      <fieldset>
+        <legend>2. 템플릿 선택 (3종)</legend>
+        <div class="template-grid" id="template-grid">
+          <label class="template template-a-option">
+            <input type="radio" name="templateCode" value="TEMPLATE_A" checked />
+            <span>
+              <strong>Template A</strong>
+              <small>Classic Card · 밝고 단정한 카드형</small>
+            </span>
+          </label>
+
+          <label class="template template-b-option">
+            <input type="radio" name="templateCode" value="TEMPLATE_B" />
+            <span>
+              <strong>Template B</strong>
+              <small>Photo Focus · 이미지 강조형</small>
+            </span>
+          </label>
+
+          <label class="template template-c-option">
+            <input type="radio" name="templateCode" value="TEMPLATE_C" />
+            <span>
+              <strong>Template C</strong>
+              <small>Minimal Letter · 편지형 미니멀</small>
+            </span>
+          </label>
+        </div>
+      </fieldset>
+
+      <div class="field-row">
+        <label>이미지 업로드
+          <input type="file" name="images" id="images" accept="image/*" multiple />
+        </label>
+
+        <label>음성 업로드
+          <input type="file" name="voice" id="voice" accept="audio/*" />
+        </label>
+      </div>
+
+      <div class="upload-status" id="upload-status" aria-live="polite">
+        <p id="size-hint">현재 총 업로드: 0MB / 14MB</p>
+        <p id="upload-detail" class="hint">파일을 선택하면 제한 검증 결과를 안내합니다.</p>
+      </div>
+
       <p class="error" id="form-error"></p>
-
       <button type="submit">공유 링크 생성</button>
     </form>
   </section>
 
   <section class="card hidden" id="result-card">
-    <h2>생성 완료</h2>
+    <h2>3. 생성 완료</h2>
     <p><strong>Message ID:</strong> <span id="message-id"></span></p>
     <p><strong>Edit Token:</strong> <code id="edit-token"></code></p>
     <p><strong>공유 링크:</strong> <a id="public-link" target="_blank" rel="noopener"></a></p>
@@ -75,10 +107,14 @@
   </section>
 
   <section class="card">
-    <h2>공개 링크 확인</h2>
+    <div class="section-title-wrap">
+      <h2>4. 링크 열람 화면</h2>
+      <p class="hint">공개 토큰으로 수신자 화면을 미리 확인합니다.</p>
+    </div>
+
     <div class="inline">
       <input type="text" id="public-token" placeholder="pub_xxx" />
-      <button id="load-public">불러오기</button>
+      <button id="load-public" type="button">불러오기</button>
     </div>
 
     <article id="preview" class="preview hidden">
