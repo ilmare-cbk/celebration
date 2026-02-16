@@ -49,3 +49,26 @@
 - API 명세서 초안: `docs/api-spec.md`
 - DB ERD 초안: `docs/erd.md`
 - 템플릿 3종 와이어프레임: `docs/wireframes.md`
+
+## 실행 계획 기반 진행 현황 (이번 작업)
+
+### 완료
+- Spring Boot 기반 MVP API 골격 구현
+  - 메시지 생성 `POST /api/v1/messages` (multipart)
+  - 메시지 수정 `PUT /api/v1/messages/{messageId}` (`X-Edit-Token` 인증)
+  - 공개 조회 `GET /api/v1/messages/public/{publicToken}`
+  - 이미지 추가 `POST /api/v1/messages/{messageId}/images`
+  - 음성 업로드/교체 `POST /api/v1/messages/{messageId}/voice`
+- 정책 반영
+  - 비회원 작성 모델
+  - 기본 만료 7일
+  - 만료 이후 수정 차단 (`MESSAGE_EXPIRED`)
+  - 공개 링크 만료 시 `LINK_EXPIRED` 반환
+  - 업로드 제한 검증(이미지 3MB/3장, 음성 5MB/1개, 총합 14MB)
+- 공통 에러 포맷 및 코드 매핑
+- 통합 테스트(생성/조회, 토큰 인증 실패, 음성 용량 초과) 작성
+
+### 다음 단계
+- 영속 저장소(JPA + DB) 연동
+- 미디어 삭제 API 구현
+- 파일 저장소(S3/로컬) 연동
