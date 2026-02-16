@@ -2,6 +2,7 @@ package com.celebration.domain;
 
 import java.time.Instant;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 
 public class Message {
@@ -85,5 +86,44 @@ public class Message {
 
     public Media voice() {
         return media.stream().filter(m -> m.mediaType() == MediaType.VOICE).findFirst().orElse(null);
+    }
+
+    public boolean removeMedia(String mediaId, Instant now) {
+        boolean removed = media.removeIf(m -> m.mediaId().equals(mediaId));
+        if (!removed) {
+            return false;
+        }
+
+        resequenceImages();
+        this.updatedAt = now;
+        return true;
+    }
+
+    private void resequenceImages() {
+        List<Media> images = media.stream()
+                .filter(m -> m.mediaType() == MediaType.IMAGE)
+                .sorted(Comparator.comparing(mediaItem -> mediaItem.sortOrder() == null ? Integer.MAX_VALUE : mediaItem.sortOrder()))
+                .toList();
+
+        List<Media> nonImages = media.stream()
+                .filter(m -> m.mediaType() != MediaType.IMAGE)
+                .toList();
+
+        List<Media> resequenced = new ArrayList<>(nonImages);
+        int sortOrder = 1;
+        for (Media image : images) {
+            resequenced.add(new Media(
+                    image.mediaId(),
+                    image.mediaType(),
+                    image.fileName(),
+                    image.fileSizeBytes(),
+                    image.mimeType(),
+                    image.url(),
+                    sortOrder++
+            ));
+        }
+
+        media.clear();
+        media.addAll(resequenced);
     }
 }

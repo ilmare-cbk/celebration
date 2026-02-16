@@ -46,14 +46,14 @@ public class MessageDtos {
 
         public record MediaPayload(List<ImagePayload> images, VoicePayload voice) {}
 
-        public record ImagePayload(String url, Integer sortOrder) {}
+        public record ImagePayload(String mediaId, String url, Integer sortOrder) {}
 
         public record VoicePayload(String url) {}
 
         public static PublicMessageResponse from(com.celebration.domain.Message message) {
             List<ImagePayload> images = message.getMedia().stream()
                     .filter(media -> media.mediaType() == com.celebration.domain.MediaType.IMAGE)
-                    .map(media -> new ImagePayload(media.url(), media.sortOrder()))
+                    .map(media -> new ImagePayload(media.mediaId(), media.url(), media.sortOrder()))
                     .toList();
 
             Media voice = message.voice();

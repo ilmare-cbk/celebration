@@ -76,7 +76,7 @@ Response 200
   },
   "media": {
     "images": [
-      { "url": "https://.../img1.jpg", "sortOrder": 1 }
+      { "mediaId": "media_01", "url": "https://.../img1.jpg", "sortOrder": 1 }
     ],
     "voice": { "url": "https://.../voice.mp3" }
   },
@@ -102,6 +102,9 @@ Error
 ### 3) 미디어 삭제
 - `DELETE /messages/{messageId}/media/{mediaId}`
 - 인증: `X-Edit-Token`
+- 동작: 이미지/음성 모두 삭제 가능, 이미지 삭제 후 남은 이미지 `sortOrder`는 1부터 재정렬
+- Response: `204 No Content`
+- Error: 대상 미디어가 없으면 `404 NOT_FOUND`
 
 ## 3. 공통 에러 포맷
 
