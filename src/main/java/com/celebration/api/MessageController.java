@@ -79,10 +79,10 @@ public class MessageController {
     }
 
     @DeleteMapping("/{messageId}/media/{mediaId}")
-    @ResponseStatus(HttpStatus.NOT_IMPLEMENTED)
+    @ResponseStatus(HttpStatus.NO_CONTENT)
     public void deleteMedia(@PathVariable String messageId,
                             @PathVariable String mediaId,
                             @RequestHeader("X-Edit-Token") String editToken) {
-        // TODO: 다음 단계에서 영속 저장소 연동 시 구현
+        messageService.deleteMedia(messageId, mediaId, editToken);
     }
 }

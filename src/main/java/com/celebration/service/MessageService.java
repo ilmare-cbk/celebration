@@ -134,6 +134,17 @@ public class MessageService {
         }
     }
 
+    public void deleteMedia(String messageId, String mediaId, String editToken) {
+        Message message = findMessage(messageId);
+        verifyEditToken(message, editToken);
+        verifyNotExpired(message);
+
+        boolean removed = message.removeMedia(mediaId, Instant.now(clock));
+        if (!removed) {
+            throw new AppException(ErrorCode.NOT_FOUND, HttpStatus.NOT_FOUND, "media not found");
+        }
+    }
+
     private Message findMessage(String messageId) {
         return repository.findById(messageId)
                 .orElseThrow(() -> new AppException(ErrorCode.NOT_FOUND, HttpStatus.NOT_FOUND, "message not found"));
