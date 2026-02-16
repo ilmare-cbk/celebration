@@ -15,10 +15,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.time.Clock;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
-import java.util.UUID;
+import java.util.*;
 
 @Service
 public class MessageService {
@@ -28,15 +25,10 @@ public class MessageService {
     private static final long TOTAL_MAX_SIZE = 14L * 1024 * 1024;
 
     private final MessageRepository repository;
-    private final Clock clock;
+    private static final Clock clock = Clock.systemUTC();
 
-    public MessageService(MessageRepository repository) {
-        this(repository, Clock.systemUTC());
-    }
-
-    MessageService(MessageRepository repository, Clock clock) {
+    MessageService(MessageRepository repository) {
         this.repository = repository;
-        this.clock = clock;
     }
 
     public MessageDtos.CreateMessageResponse create(String title,
@@ -181,8 +173,11 @@ public class MessageService {
     }
 
     private List<Media> validateAndBuildMedia(List<MultipartFile> images, MultipartFile voice, long existingSizeBytes) {
-        List<MultipartFile> normalizedImages = Objects.requireNonNullElse(images, List.of())
-                .stream().filter(file -> file != null && !file.isEmpty()).toList();
+        List<MultipartFile> normalizedImages = Optional.ofNullable(images)
+                .orElseGet(List::of)
+                .stream()
+                .filter(file -> !file.isEmpty())
+                .toList();
 
         if (normalizedImages.size() > 3) {
             throw new AppException(ErrorCode.VALIDATION_ERROR, HttpStatus.BAD_REQUEST, "images can be up to 3");
